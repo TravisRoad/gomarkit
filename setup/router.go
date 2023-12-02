@@ -5,6 +5,7 @@ import (
 
 	"github.com/TravisRoad/gomarkit/global"
 	"github.com/TravisRoad/gomarkit/router"
+	"github.com/boj/redistore"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
@@ -30,7 +31,15 @@ func InitRouter() *gin.Engine {
 		slog.Error(err.Error())
 		panic(err)
 	}
-	store.Options(sessions.Options{Secure: false, HttpOnly: false})
+	_, rs := redis.GetRedisStore(store)
+	rs.SetSerializer(redistore.JSONSerializer{})
+
+	store.Options(sessions.Options{
+		Path:     "/",
+		MaxAge:   60 * 60 * 24,
+		Secure:   false,
+		HttpOnly: false,
+	})
 	r.Use(sessions.Sessions("session", store))
 
 	r.Use(

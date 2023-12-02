@@ -19,3 +19,7 @@ var (
 	Logger *zap.Logger
 	Redis  *redis.Client
 )
+
+const (
+	USER_INFO_KEY = "user_info"
+)
