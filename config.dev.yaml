@@ -1,0 +1,14 @@
+port: 8080
+
+# 后端验证
+token: token
+
+# 前端盐
+salt: salt
+sqlite:
+  path: data.sqlite
+
+redis:
+  db: 0
+  addr: 127.0.0.1:6379
+  password: "Wrecker5282"

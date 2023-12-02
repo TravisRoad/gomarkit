@@ -1,0 +1,9 @@
+port: 8080
+
+# 后端验证
+token: token
+
+# 前端盐
+salt: salt
+sqlite:
+  path: /app/data.sqlite
