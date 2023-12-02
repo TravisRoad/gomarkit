@@ -9,13 +9,15 @@ import (
 )
 
 func initDB() *gorm.DB {
-	config := global.Config.Sqlite
-	db, err := gorm.Open(sqlite.Open(config.Path), &gorm.Config{})
+	cfg := global.Config.Sqlite
+	db, err := gorm.Open(sqlite.Open(cfg.Path), &gorm.Config{})
 	if err != nil {
 		slog.Error(err.Error())
 		panic(err)
 	}
 
 	db.AutoMigrate()
+
+	slog.Info("successfully connect to db", slog.String("path", cfg.Path))
 	return db
 }

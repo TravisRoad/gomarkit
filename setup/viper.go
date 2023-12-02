@@ -39,6 +39,9 @@ func InitViper() {
 		gin.SetMode(gin.ReleaseMode)
 		configFile = PROD_CONFIG_FILE
 	}
+
+	slog.Info("config file", slog.String("path", configFile), slog.String("mode", mode))
+
 	v.SetConfigFile(configFile)
 	v.SetConfigType("yaml")
 	err := v.ReadInConfig()
