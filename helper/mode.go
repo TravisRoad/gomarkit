@@ -5,7 +5,7 @@ import "os"
 func Mode() string {
 	mode, ok := os.LookupEnv("MODE")
 	if !ok {
-		mode = "dev"
+		mode = "DEV"
 	}
 	return mode
 }
