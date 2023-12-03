@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/TravisRoad/gomarkit/global"
+	"github.com/TravisRoad/gomarkit/global/errcode"
 	"github.com/TravisRoad/gomarkit/model"
 	"github.com/TravisRoad/gomarkit/service"
 	"github.com/gin-contrib/sessions"
@@ -20,11 +21,19 @@ type LoginReq struct {
 
 func (aa *AuthApi) Login(c *gin.Context) {
 	session := sessions.Default(c)
+	if uinfo, ok := session.Get(global.USER_INFO_KEY).(model.UserInfo); ok {
+		global.Logger.Info("already login", zap.String("username", uinfo.Username))
+		c.AbortWithStatusJSON(http.StatusOK, gin.H{
+			"code": 0,
+			"msg":  "success",
+		})
+		return
+	}
 
 	req := LoginReq{}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"code": 100, // TODO: error code
+			"code": errcode.LoginFailed,
 			"msg":  err.Error(),
 		})
 		global.Logger.Info("invalid request", zap.Error(err))
@@ -35,7 +44,7 @@ func (aa *AuthApi) Login(c *gin.Context) {
 	user, err := as.Login(req.Username, req.Password)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"code": 101, // TODO: error code
+			"code": errcode.UsernameOrPwd,
 			"msg":  err.Error(),
 		})
 		global.Logger.Info("invalid login auth", zap.String("username", req.Username), zap.Error(err))
@@ -45,12 +54,13 @@ func (aa *AuthApi) Login(c *gin.Context) {
 	userInfo := model.UserInfo{
 		ID:       user.ID,
 		Username: user.Username,
+		Role:     user.Role,
 	}
 
 	session.Set(global.USER_INFO_KEY, userInfo)
 	if err := session.Save(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"code": 102, // TODO: error code
+			"code": errcode.SessionSave,
 			"msg":  err.Error(),
 		})
 		global.Logger.Info("failed to save session", zap.Error(err))
@@ -68,7 +78,7 @@ func (aa *AuthApi) Logout(c *gin.Context) {
 	session.Clear()
 	if err := session.Save(); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"code": 102, // TODO: error code
+			"code": errcode.SessionSave,
 			"msg":  err.Error(),
 		})
 		global.Logger.Info("failed to save session", zap.Error(err))
@@ -78,5 +88,19 @@ func (aa *AuthApi) Logout(c *gin.Context) {
 }
 
 func (aa *AuthApi) IsLogin(c *gin.Context) {
+	session := sessions.Default(c)
+	uinfo, ok := session.Get(global.USER_INFO_KEY).(model.UserInfo)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"code": errcode.NotLogin,
+			"msg":  "not login",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "success",
+		"data": uinfo,
+	})
 
 }
