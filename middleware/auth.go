@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/TravisRoad/gomarkit/errcode"
 	"github.com/TravisRoad/gomarkit/global"
-	"github.com/TravisRoad/gomarkit/global/errcode"
 	"github.com/TravisRoad/gomarkit/helper"
 	"github.com/TravisRoad/gomarkit/model"
 	"github.com/gin-contrib/sessions"

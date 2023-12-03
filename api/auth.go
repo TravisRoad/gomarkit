@@ -3,8 +3,8 @@ package api
 import (
 	"net/http"
 
+	"github.com/TravisRoad/gomarkit/errcode"
 	"github.com/TravisRoad/gomarkit/global"
-	"github.com/TravisRoad/gomarkit/global/errcode"
 	"github.com/TravisRoad/gomarkit/model"
 	"github.com/TravisRoad/gomarkit/service"
 	"github.com/gin-contrib/sessions"
