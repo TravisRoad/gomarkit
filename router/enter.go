@@ -13,6 +13,7 @@ func Register(r *gin.Engine) {
 
 	rts := []Router{
 		&AuthRouter{},
+		&AdminRouter{},
 	}
 
 	for _, rt := range rts {

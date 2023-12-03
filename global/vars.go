@@ -23,3 +23,8 @@ var (
 const (
 	USER_INFO_KEY = "user_info"
 )
+
+const (
+	ROLE_ADMIN = "admin"
+	ROLE_USER  = "user"
+)
