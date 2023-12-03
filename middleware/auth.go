@@ -7,33 +7,32 @@ import (
 	"github.com/TravisRoad/gomarkit/errcode"
 	"github.com/TravisRoad/gomarkit/global"
 	"github.com/TravisRoad/gomarkit/helper"
-	"github.com/TravisRoad/gomarkit/model"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-func debugUserinfo(s sessions.Session) (model.UserInfo, error) {
-	uinfo := model.UserInfo{
-		ID:       1,
-		Username: "admin",
-		Role:     "admin",
-	}
+func debugUserinfo(s sessions.Session) (map[string]interface{}, error) {
+	uinfo := make(map[string]interface{}, 0)
+	uinfo["id"] = 1
+	uinfo["username"] = "admin"
+	uinfo["role"] = "admin"
+
 	s.Set(global.USER_INFO_KEY, uinfo)
 	err := s.Save()
 	return uinfo, fmt.Errorf("debugUserinfo failed to save session: %w", err)
 }
 
-func saveUserInfo(uinfo model.UserInfo, c *gin.Context) {
-	c.Set("username", uinfo.Username)
-	c.Set("ID", uinfo.ID)
-	c.Set("role", uinfo.Role)
+func saveUserInfo(uinfo map[string]interface{}, c *gin.Context) {
+	c.Set("username", uinfo["username"])
+	c.Set("ID", uinfo["id"])
+	c.Set("role", uinfo["role"])
 }
 
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		uinfo, ok := session.Get(global.USER_INFO_KEY).(model.UserInfo)
+		uinfo, ok := session.Get(global.USER_INFO_KEY).(map[string]interface{})
 		mode := helper.Mode()
 
 		// if debug mode on
