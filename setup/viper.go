@@ -1,13 +1,13 @@
 package setup
 
 import (
-	"os"
 	"path/filepath"
 	"runtime"
 
 	"log/slog"
 
 	"github.com/TravisRoad/gomarkit/global"
+	"github.com/TravisRoad/gomarkit/helper"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
@@ -18,10 +18,7 @@ const (
 )
 
 func InitViper() {
-	mode, ok := os.LookupEnv("MODE")
-	if !ok {
-		mode = "dev"
-	}
+	mode := helper.Mode()
 
 	v := viper.New()
 	configFile := DEV_CONFIG_FILE
