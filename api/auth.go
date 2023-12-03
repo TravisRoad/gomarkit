@@ -84,7 +84,10 @@ func (aa *AuthApi) Logout(c *gin.Context) {
 		global.Logger.Info("failed to save session", zap.Error(err))
 		return
 	}
-	c.Status(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "success",
+	})
 }
 
 func (aa *AuthApi) IsLogin(c *gin.Context) {
