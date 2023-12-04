@@ -23,9 +23,13 @@ func initDB() *gorm.DB {
 		panic("unsupported database type")
 	}
 
-	db.AutoMigrate(
+	err := db.AutoMigrate(
 		&model.User{},
 	)
+	if err != nil {
+		slog.Error("failed during automigration", "err", err.Error())
+		panic(err)
+	}
 
 	return db
 }
