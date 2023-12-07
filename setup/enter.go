@@ -7,4 +7,5 @@ func Setup() {
 	global.DB = initDB()
 	global.Logger = initZap()
 	global.Redis = initRedis()
+	global.Sqids = initSqids()
 }

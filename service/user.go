@@ -19,15 +19,11 @@ func (us *UserService) GetUsers(page, size int) ([]model.User, int64, error) {
 	users := make([]model.User, 0)
 	var cnt int64
 
-	tx := global.DB.Begin()
-
-	if err := tx.Model(&model.User{}).Offset((page - 1) * size).Limit(size).Find(&users).Error; err != nil {
-		tx.Rollback()
+	if err := global.DB.Model(&model.User{}).Offset((page - 1) * size).Limit(size).Find(&users).Error; err != nil {
 		return nil, 0, err
 	}
 
-	if err := tx.Model(&model.User{}).Count(&cnt).Error; err != nil {
-		tx.Rollback()
+	if err := global.DB.Model(&model.User{}).Count(&cnt).Error; err != nil {
 		return nil, 0, err
 	}
 
@@ -35,7 +31,6 @@ func (us *UserService) GetUsers(page, size int) ([]model.User, int64, error) {
 		u.Password = ""
 	}
 
-	tx.Commit()
 	return users, cnt, nil
 }
 
