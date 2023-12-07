@@ -2,12 +2,14 @@ package setup
 
 import (
 	"log/slog"
+	"time"
 
 	"github.com/TravisRoad/gomarkit/global"
 	"github.com/TravisRoad/gomarkit/router"
 	"github.com/boj/redistore"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/redis"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,9 +45,18 @@ func InitRouter() *gin.Engine {
 	r.Use(sessions.Sessions("session", store))
 
 	r.Use(
-		gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{HEALTH_PATH}}),
-		gin.Recovery(),
+		ginzap.GinzapWithConfig(global.Logger, &ginzap.Config{
+			TimeFormat: time.RFC3339,
+			UTC:        true,
+			SkipPaths:  []string{HEALTH_PATH},
+		}),
+		ginzap.RecoveryWithZap(global.Logger, true),
 	)
+
+	// r.Use(
+	// 	gin.LoggerWithConfig(gin.LoggerConfig{SkipPaths: []string{HEALTH_PATH}}),
+	// 	gin.Recovery(),
+	// )
 
 	r.GET(HEALTH_PATH, func(ctx *gin.Context) {})
 
