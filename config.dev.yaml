@@ -16,13 +16,20 @@ database:
     port: 3306
     dbname: gomarkit
     config: charset=utf8mb4&parseTime=True&loc=Local
-    max-idle-conns: 10
-    max-open-conns: 100
-    log-mode: ""
-    log-zap: false
+    max_idle_conns: 10
+    max_open_conns: 100
+    log_mode: ""
+    log_zap: false
 
 redis:
   enable: true
   db: 0
   addr: 127.0.0.1:6379
   password: "Wrecker5282"
+
+log:
+  dir: ./logs
+  max_size: 10
+  max_backups: 10
+  max_age: 31
+  level: Debug

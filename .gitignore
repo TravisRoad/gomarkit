@@ -4,3 +4,6 @@ out
 vendor
 
 logs
+
+# binary
+__debug_bin*

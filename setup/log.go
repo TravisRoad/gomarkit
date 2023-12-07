@@ -1,42 +1,58 @@
 package setup
 
 import (
+	"fmt"
 	"os"
 
+	"github.com/TravisRoad/gomarkit/global"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-func PathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
-}
-
 func initZap() *zap.Logger {
-	// logger, err := zap.NewDevelopment(zap.AddCaller())
+	cfg := global.Config.Log
+
+	level := logLevel(cfg.Level)
 	w := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   "./logs/foo.log",
-		MaxSize:    1, // megabytes
-		MaxBackups: 30,
-		MaxAge:     28, // days
+		Filename:   fmt.Sprintf("%s/log.log", cfg.Dir),
+		MaxSize:    cfg.MaxSize, // megabytes
+		MaxBackups: cfg.MaxBackups,
+		MaxAge:     cfg.MaxAge, // days
 	})
-	core := zapcore.NewCore(
+	rotateCore := zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()),
 		w,
-		zap.DebugLevel,
+		level,
 	)
-	logger := zap.New(core, zap.AddCaller())
+	stdoutCore := zapcore.NewCore(
+		zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
+		zapcore.Lock(os.Stdout),
+		level,
+	)
 
-	// if err != nil {
-	// 	panic(err)
-	// }
-
+	logger := zap.New(zapcore.NewTee(rotateCore, stdoutCore), zap.AddCaller())
 	return logger
+}
+
+func logLevel(s string) (level zapcore.Level) {
+	switch s {
+	case "DPanic":
+		level = zap.DPanicLevel
+	case "Panic":
+		level = zap.PanicLevel
+	case "Fatal":
+		level = zap.FatalLevel
+	case "Error":
+		level = zap.ErrorLevel
+	case "Info":
+		level = zap.InfoLevel
+	case "Warn":
+		level = zap.WarnLevel
+	case "Debug":
+		level = zap.DebugLevel
+	default:
+		level = zap.DebugLevel
+	}
+	return level
 }

@@ -6,4 +6,5 @@ type Config struct {
 	Salt     string   `mapstructure:"salt" json:"salt" yaml:"salt"`
 	Redis    Redis    `mapstructure:"redis" json:"redis" yaml:"redis"`
 	Database Database `mapstructure:"database" json:"database" yaml:"database"`
+	Log      Log      `mapstructure:"log" json:"log" yaml:"log"`
 }
