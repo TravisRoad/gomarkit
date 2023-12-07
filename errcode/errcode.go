@@ -7,6 +7,7 @@ const (
 	// common
 	ParamParseFailed = 10
 	RoleMismatch     = 11
+	SqidsParseFailed = 12
 
 	// auth
 	LoginFailed   = 100
@@ -19,4 +20,7 @@ const (
 	UpdateUserFailed = 201
 	DeleteUserFailed = 202
 	AddUserFailed    = 203
+
+	// proj
+	GetProjsFailed = 301
 )

@@ -25,6 +25,8 @@ func initDB() *gorm.DB {
 
 	err := db.AutoMigrate(
 		&model.User{},
+		&model.Proj{},
+		&model.ProjTag{},
 	)
 	if err != nil {
 		slog.Error("failed during automigration", "err", err.Error())
