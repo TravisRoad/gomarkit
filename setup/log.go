@@ -12,26 +12,38 @@ import (
 
 func initZap() *zap.Logger {
 	cfg := global.Config.Log
-
 	level := logLevel(cfg.Level)
-	w := zapcore.AddSync(&lumberjack.Logger{
-		Filename:   fmt.Sprintf("%s/log.log", cfg.Dir),
-		MaxSize:    cfg.MaxSize, // megabytes
-		MaxBackups: cfg.MaxBackups,
-		MaxAge:     cfg.MaxAge, // days
-	})
-	rotateCore := zapcore.NewCore(
-		zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()),
-		w,
-		level,
-	)
+
 	stdoutCore := zapcore.NewCore(
 		zapcore.NewConsoleEncoder(zap.NewDevelopmentEncoderConfig()),
 		zapcore.Lock(os.Stdout),
 		level,
 	)
+	cores := []zapcore.Core{stdoutCore}
 
-	logger := zap.New(zapcore.NewTee(rotateCore, stdoutCore), zap.AddCaller())
+	if cfg.Rotate {
+		w := zapcore.AddSync(&lumberjack.Logger{
+			Filename:   fmt.Sprintf("%s/log.log", cfg.Dir),
+			MaxSize:    cfg.MaxSize, // megabytes
+			MaxBackups: cfg.MaxBackups,
+			MaxAge:     cfg.MaxAge, // days
+		})
+		rotateCore := zapcore.NewCore(
+			zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()),
+			w,
+			level,
+		)
+		cores = append(cores, rotateCore)
+	}
+
+	var core zapcore.Core
+	if len(cores) == 1 {
+		core = cores[0]
+	} else {
+		core = zapcore.NewTee(cores...)
+	}
+
+	logger := zap.New(core, zap.AddCaller())
 	return logger
 }
 

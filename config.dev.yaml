@@ -29,6 +29,7 @@ redis:
 
 log:
   dir: ./logs
+  rotate: false
   max_size: 10
   max_backups: 10
   max_age: 31
