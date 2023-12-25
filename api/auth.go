@@ -21,10 +21,11 @@ type LoginReq struct {
 
 func (aa *AuthApi) Login(c *gin.Context) {
 	session := sessions.Default(c)
-	if uinfo, ok := session.Get(global.USER_INFO_KEY).(model.UserInfo); ok {
-		global.Logger.Info("already login", zap.String("username", uinfo.Username))
+	if uinfo, ok := session.Get(global.USER_INFO_KEY).(map[string]interface{}); ok {
+		global.Logger.Info("already login", zap.String("username", uinfo["username"].(string)))
 		c.AbortWithStatusJSON(http.StatusOK, gin.H{
 			"code": 0,
+			"data": uinfo,
 			"msg":  "success",
 		})
 		return
@@ -69,6 +70,7 @@ func (aa *AuthApi) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": 0,
+		"data": userInfo,
 		"msg":  "success",
 	})
 }
@@ -92,7 +94,7 @@ func (aa *AuthApi) Logout(c *gin.Context) {
 
 func (aa *AuthApi) IsLogin(c *gin.Context) {
 	session := sessions.Default(c)
-	uinfo, ok := session.Get(global.USER_INFO_KEY).(model.UserInfo)
+	uinfo, ok := session.Get(global.USER_INFO_KEY).(map[string]interface{})
 	if !ok {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"code": errcode.NotLogin,
